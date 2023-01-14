@@ -1,23 +1,17 @@
 package main
 
 import (
+	"github.com/WZWren/gossip-app-backend/database"
+	"github.com/WZWren/gossip-app-backend/routes"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 func main() {
-	_, err := gorm.Open(mysql.Open("root:rootwalla@/gossip"), &gorm.Config{})
-
-	if err != nil {
-		panic("could not connect to the database")
-	}
+	database.Connect()
 
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("I LIVE LADS!")
-	})
+	routes.Setup(app)
 
 	app.Listen(":8000")
 }
