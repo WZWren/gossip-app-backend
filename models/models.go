@@ -26,3 +26,11 @@ type Comment struct {
 	DateCreated int64  `json:"cmmt_date"`
 	DateUpdated int64  `json:"cmmt_upd"`
 }
+
+// tab stores the user bookmarks and ignores, etc.
+// tabtype: bookmark / ignore
+type Tab struct {
+	UserId   uint   `json:"user_id"`
+	ThreadId uint   `json:"thread_id"`
+	TabType  string `json:"tab_type"`
+}

@@ -8,7 +8,7 @@ import (
 func Setup(app *fiber.App) {
 	app.Get("/", controllers.Healthcheck)
 	app.Get("/api/user", controllers.User)
-	app.Get("/api/logout", controllers.Logout)
+	app.Post("/api/logout", controllers.Logout)
 	app.Post("/api/register", controllers.Register)
 	app.Post("/api/login", controllers.Login)
 
@@ -17,4 +17,6 @@ func Setup(app *fiber.App) {
 
 	app.Post("/api/getcomments", controllers.GetComments)
 	app.Post("/api/postcomment", controllers.PostComment)
+	app.Delete("/api/deletecomment", controllers.DeleteComment)
+	app.Patch("/api/updatecomment", controllers.UpdateComment)
 }

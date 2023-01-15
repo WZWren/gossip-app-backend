@@ -181,6 +181,10 @@ func PostThread(c *fiber.Ctx) error {
 	if err := c.BodyParser(&thread); err != nil {
 		return err
 	}
+	t := time.Now().Unix()
+
+	thread.DateCreated = t
+	thread.DateUpdated = t
 
 	database.DB.Create(&thread)
 
@@ -203,10 +207,10 @@ func PostComment(c *fiber.Ctx) error {
 	if err := c.BodyParser(&comment); err != nil {
 		return err
 	}
-	time := time.Now().Unix()
+	t := time.Now().Unix()
 
-	comment.DateCreated = time
-	comment.DateUpdated = time
+	comment.DateCreated = t
+	comment.DateUpdated = t
 
 	database.DB.Create(&comment)
 
@@ -235,4 +239,65 @@ func GetComments(c *fiber.Ctx) error {
 		"id = ?", data["thread_id"]).Update("comment_no", uint(result.RowsAffected))
 
 	return c.JSON(comments)
+}
+
+// DeleteComments route.
+// Removes the comment entirely.
+// DELETE request.
+func DeleteComment(c *fiber.Ctx) error {
+	var data map[string]int
+
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	var comment models.Comment
+	database.DB.Where("id = ?", data["cmmt_id"]).First(&comment)
+
+	// this should never catch an error, but just in case...
+	if comment.Id == 0 {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(fiber.Map{
+			"message": "Comment does not exist.",
+		})
+	}
+
+	database.DB.Delete(&comment)
+	return c.JSON(fiber.Map{
+		"message": "Delete successful.",
+	})
+}
+
+// UpdateComments route.
+// Change the contents of the comment.
+// PATCH request.
+func UpdateComment(c *fiber.Ctx) error {
+	var comment models.Comment
+
+	if err := c.BodyParser(&comment); err != nil {
+		return err
+	}
+
+	// this should never catch an error, but just in case...
+	if comment.Id == 0 {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(fiber.Map{
+			"message": "Comment does not exist.",
+		})
+	}
+
+	database.DB.Model(&models.Comment{}).Where(
+		"id = ?", comment.Id).Update("body", comment.Body)
+	database.DB.Model(&models.Comment{}).Where(
+		"id = ?", comment.Id).Update("date_updated", time.Now().Unix())
+
+	return c.JSON(fiber.Map{
+		"message": "Update successful.",
+	})
+}
+
+// AddTabs route. Adds the basic tag to the database
+// POST request. @TODO: Complete the implementation of AddTabs
+func AddTabs(c *fiber.Ctx) error {
+	return c.SendString("Placeholder")
 }
