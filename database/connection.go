@@ -18,4 +18,6 @@ func Connect() {
 	DB = connection
 
 	connection.AutoMigrate(&models.User{})
+	connection.AutoMigrate(&models.Thread{})
+	connection.AutoMigrate(&models.Comment{})
 }
