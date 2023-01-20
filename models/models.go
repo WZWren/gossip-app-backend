@@ -6,9 +6,15 @@ type User struct {
 	Password []byte `json:"-"`
 }
 
+// I can relegate the username to the frontend/functions
+// in the backend. However, I don't see the point as each thread
+// will only ever have 1 user. For simplicity, we store the user
+// name with the thread and comment.
+
 type Thread struct {
 	Id          uint   `json:"thread_id"`
 	UserId      uint   `json:"user_id"`
+	UserName    string `json:"user_name"`
 	TagId       uint   `json:"tag_id"`
 	Title       string `json:"thread_title"`
 	Body        string `json:"thread_body"`
@@ -20,6 +26,7 @@ type Thread struct {
 type Comment struct {
 	Id          uint   `json:"cmmt_id"`
 	UserId      uint   `json:"user_id"`
+	UserName    string `json:"user_name"`
 	ThreadId    uint   `json:"thread_id"`
 	CommentSeq  uint   `json:"cmmt_seq"`
 	Body        string `json:"cmmt_body"`
@@ -28,9 +35,9 @@ type Comment struct {
 }
 
 // tab stores the user bookmarks and ignores, etc.
-// tabtype: bookmark / ignore
+// tabtype: bookmark = 1 / ignore = 2
 type Tab struct {
-	UserId   uint   `json:"user_id"`
-	ThreadId uint   `json:"thread_id"`
-	TabType  string `json:"tab_type"`
+	UserId   uint `json:"user_id"`
+	ThreadId uint `json:"thread_id"`
+	TabType  byte `json:"tab_type"`
 }

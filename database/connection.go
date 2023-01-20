@@ -17,7 +17,9 @@ func Connect() {
 
 	DB = connection
 
+	// this syncs the golang instance with the mysql server.
 	connection.AutoMigrate(&models.User{})
 	connection.AutoMigrate(&models.Thread{})
 	connection.AutoMigrate(&models.Comment{})
+	connection.AutoMigrate(&models.Tab{})
 }

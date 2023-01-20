@@ -220,7 +220,7 @@ func PostComment(c *fiber.Ctx) error {
 // GetComments route. Grants a JSON Object with all the comments to display.
 // This specifically only looks for the data corresponding to the thread id
 // given.
-// GET request.
+// POST request - information from the frontend is needed.
 func GetComments(c *fiber.Ctx) error {
 	// data should only consist of "thread_id": integer.
 	var data map[string]int
@@ -296,8 +296,33 @@ func UpdateComment(c *fiber.Ctx) error {
 	})
 }
 
-// AddTabs route. Adds the basic tag to the database
-// POST request. @TODO: Complete the implementation of AddTabs
-func AddTabs(c *fiber.Ctx) error {
-	return c.SendString("Placeholder")
+// PostTabs route. Adds the basic tag to the database
+// POST request.
+func PostTabs(c *fiber.Ctx) error {
+	var tab models.Tab
+
+	if err := c.BodyParser(&tab); err != nil {
+		return err
+	}
+
+	database.DB.Create(&tab)
+
+	return c.JSON(fiber.Map{
+		"message": "Tab added to database.",
+	})
+}
+
+// GetTabs route. Adds the basic tag to the database
+// POST request - Gets the user id that is asking for the information
+func GetTabs(c *fiber.Ctx) error {
+	var data map[string]int
+
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	var tabs []models.Tab
+	database.DB.Where("user_id = ?", data["user_id"]).Find(&tabs)
+
+	return c.JSON(tabs)
 }
