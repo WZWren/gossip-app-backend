@@ -9,6 +9,7 @@ import (
 var DB *gorm.DB
 
 func Connect() {
+	// this line is where the SQL root account field goes - change to connect to a different db
 	connection, err := gorm.Open(mysql.Open("root:rootwalla@/gossip"), &gorm.Config{})
 
 	if err != nil {
