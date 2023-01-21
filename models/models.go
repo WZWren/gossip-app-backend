@@ -11,6 +11,7 @@ type User struct {
 // will only ever have 1 user. For simplicity, we store the user
 // name with the thread and comment.
 
+// tag_id = 0 is no tags. tag_id = 1 is Work. tag_id = 2 is Play.
 type Thread struct {
 	Id          uint   `json:"thread_id"`
 	UserId      uint   `json:"user_id"`

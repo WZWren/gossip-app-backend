@@ -11,9 +11,11 @@ func Setup(app *fiber.App) {
 	app.Post("/api/logout", controllers.Logout)
 	app.Post("/api/register", controllers.Register)
 	app.Post("/api/login", controllers.Login)
+	app.Post("/api/user/name", controllers.GetUsername)
 
-	app.Get("/api/thread/get", controllers.GetThreads)
+	app.Get("/api/thread/get", controllers.GetThread)
 	app.Post("/api/thread/post", controllers.PostThread)
+	app.Post("/api/thread/search", controllers.SearchThread)
 
 	// get comment is a post request in this case: we need the relevant
 	// thread information to get it.
@@ -24,4 +26,5 @@ func Setup(app *fiber.App) {
 
 	app.Post("api/tabs/post", controllers.PostTabs)
 	app.Post("api/tabs/get", controllers.GetTabs)
+	app.Delete("api/tabs/delete", controllers.DeleteTabs)
 }

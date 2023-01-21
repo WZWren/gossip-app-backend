@@ -156,6 +156,26 @@ func User(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// GetUsername route. While username is a field in the model struct,
+// I wanted to do this as a proof of concept.
+// POST request.
+func GetUsername(c *fiber.Ctx) error {
+	var data map[string]uint
+
+	// data - user_id: integer
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	var user models.User
+
+	database.DB.Where("id = ?", data["user_id"]).First(&user)
+
+	return c.JSON(fiber.Map{
+		"user_name": user.Name,
+	})
+}
+
 // Logout route. Logout is done by expiring the cookie on the frontend.
 // GET request.
 func Logout(c *fiber.Ctx) error {
@@ -193,9 +213,30 @@ func PostThread(c *fiber.Ctx) error {
 
 // GetThread route. Grants a JSON Object with all the threads to display.
 // GET request.
-func GetThreads(c *fiber.Ctx) error {
+func GetThread(c *fiber.Ctx) error {
 	var threads []models.Thread
 	database.DB.Find(&threads)
+	return c.JSON(threads)
+}
+
+// SearchThread route. Gets all threads matching the search in body and title.
+// POST request.
+func SearchThread(c *fiber.Ctx) error {
+	var search map[string]string
+
+	// search - search: "the string to search for"
+	if err := c.BodyParser(&search); err != nil {
+		return err
+	}
+
+	search["search"] = "%" + search["search"] + "%"
+
+	var threads []models.Thread
+	database.DB.Where(
+		"body LIKE ? OR title LIKE ?",
+		search["search"],
+		search["search"]).Find(&threads)
+
 	return c.JSON(threads)
 }
 
@@ -325,4 +366,20 @@ func GetTabs(c *fiber.Ctx) error {
 	database.DB.Where("user_id = ?", data["user_id"]).Find(&tabs)
 
 	return c.JSON(tabs)
+}
+
+// DeleteTabs route. Adds the basic tag to the database
+// DELETE request.
+func DeleteTabs(c *fiber.Ctx) error {
+	var tab models.Tab
+
+	if err := c.BodyParser(&tab); err != nil {
+		return err
+	}
+
+	database.DB.Where(&tab).Delete(&tab)
+
+	return c.JSON(fiber.Map{
+		"message": "Tab deleted from database.",
+	})
 }
