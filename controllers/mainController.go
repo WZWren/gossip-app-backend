@@ -222,21 +222,31 @@ func GetThread(c *fiber.Ctx) error {
 // SearchThread route. Gets all threads matching the search in body and title.
 // POST request.
 func SearchThread(c *fiber.Ctx) error {
-	var search map[string]string
+	type Search struct {
+		Query string `json:"query"`
+		TagId uint   `json:"tag_id"`
+	}
+	var search Search
 
-	// search - search: "the string to search for"
 	if err := c.BodyParser(&search); err != nil {
 		return err
 	}
 
-	search["search"] = "%" + search["search"] + "%"
+	search.Query = "%" + search.Query + "%"
 
 	var threads []models.Thread
-	database.DB.Where(
-		"body LIKE ? OR title LIKE ?",
-		search["search"],
-		search["search"]).Find(&threads)
-
+	if search.TagId == 0 {
+		database.DB.Where(
+			"body LIKE ? OR title LIKE ?",
+			search.Query,
+			search.Query).Find(&threads)
+	} else {
+		database.DB.Where(
+			"(body LIKE ? OR title LIKE ?) AND tag_id = ?",
+			search.Query,
+			search.Query,
+			search.TagId).Find(&threads)
+	}
 	return c.JSON(threads)
 }
 
